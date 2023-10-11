@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: fastapi
+        image: richdatadock/kubefastapitry:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sql_db
+              key: MYSQL_ROOT_PASSWORD
+        - name: pod_ip
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP    
+      - name: mysql
+        image: datascientest/mysql-k8s:1.0.0
+        ports:
+        - containerPort: 3306

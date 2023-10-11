@@ -1,21 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.engine import create_engine
-import os
+import os # added to get the password from the environment variable
 
 # creating a FastAPI server
-server = FastAPI(title='Eval API')
+server = FastAPI(title='User API')
 
 # creating a connection to the database
-mysql_url = '172.17.0.2' #arbitrary choice
+mysql_url = os.environ['pod_IP'] # 'mysql://root:@mysql:3306/Main' 
 mysql_user = 'root'
-try:
-    mysql_password = os.environ.get('DB_Password')
-    exit()
-except:
-    print("Database Password not availabe or set up in Environment variable") 
-
-database_name = 'Main'
+mysql_password = os.environ['MYSQL_ROOT_PASSWORD']
+database_name='Main'
 
 # recreating the URL connection
 connection_url = 'mysql://{user}:{password}@{url}/{database}'.format(
@@ -27,7 +22,6 @@ connection_url = 'mysql://{user}:{password}@{url}/{database}'.format(
 
 # creating the connection
 mysql_engine = create_engine(connection_url)
-
 
 # creating a User class
 class User(BaseModel):
